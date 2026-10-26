@@ -142,6 +142,14 @@ jobs:
           done
           cyan -i youtube.ipa -o YouTubePlus_${{ github.event.inputs.tweak_version }}.ipa -uwef $tweaks -n "${{ github.event.inputs.display_name }}" -b ${{ github.event.inputs.bundle_id }}
 
+      - name: Spoof app version
+        run: |
+          unzip -q YouTubePlus_${{ inputs.tweak_version }}.ipa -d spoof
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 19.20.2" spoof/Payload/YouTube.app/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 19.20.2" spoof/Payload/YouTube.app/Info.plist
+          rm YouTubePlus_${{ inputs.tweak_version }}.ipa
+          cd spoof && zip -qry ../YouTubePlus_${{ inputs.tweak_version }}.ipa Payload
+
       - name: Upload to GitHub Releases
         uses: softprops/action-gh-release@v3
         with:
